@@ -1,68 +1,229 @@
 
-using Microsoft.AspNetCore.Mvc;
+using DigitalGardrop.Web.Data;
 using DigitalGardrop.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace DigitalGardrop.Web.Controllers
 {
     public class ClothingItemsController : Controller
     {
-        private static int sonId = 3;
+        private readonly ApplicationDbContext _context;
 
-        private static readonly List<ClothingItem> kiyafetler = new()
+        public ClothingItemsController(ApplicationDbContext context)
         {
-            new ClothingItem
-            {
-                Id = 1,
-                Name = "Siyah Basic Tişört",
-                Category = "Üst Giyim",
-                Color = "Siyah",
-                Season = "Yaz",
-                Style = "Günlük"
-            },
-            new ClothingItem
-            {
-                Id = 2,
-                Name = "Mavi Kot Pantolon",
-                Category = "Alt Giyim",
-                Color = "Mavi",
-                Season = "Dört Mevsim",
-                Style = "Günlük"
-            },
-            new ClothingItem
-            {
-                Id = 3,
-                Name = "Beyaz Spor Ayakkabı",
-                Category = "Ayakkabı",
-                Color = "Beyaz",
-                Season = "Dört Mevsim",
-                Style = "Spor"
-            }
-        };
+            _context = context;
+        }
 
-        public IActionResult Index()
+        private async Task FillCategoriesAsync(
+            ClothingItemFormViewModel model)
         {
-            return View(kiyafetler);
+            var categories = await _context.Categories
+                .AsNoTracking()
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+
+            model.Categories = new SelectList(
+                categories, "Id", "Name", model.CategoryId);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var items = await _context.ClothingItems
+                .AsNoTracking()
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+
+            return View(items);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var model = new ClothingItemFormViewModel();
+
+            await FillCategoriesAsync(model);
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(
-            [Bind("Name,Category,Color,Season,Style")]
-            ClothingItem yeniKiyafet)
+        public async Task<IActionResult> Create(
+            ClothingItemFormViewModel model)
         {
-            sonId++;
+            if (!ModelState.IsValid)
+            {
+                await FillCategoriesAsync(model);
+                return View(model);
+            }
 
-            yeniKiyafet.Id = sonId;
+            var category = await _context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    c => c.Id == model.CategoryId);
 
-            kiyafetler.Add(yeniKiyafet);
+            if (category == null)
+            {
+                ModelState.AddModelError(
+                    nameof(model.CategoryId),
+                    "Geçerli bir kategori seçiniz.");
 
-            return RedirectToAction("Index");
+                await FillCategoriesAsync(model);
+                return View(model);
+            }
+
+            var item = new ClothingItem
+            {
+                Name = model.Name,
+                CategoryId = category.Id,
+                Category = category.Name,
+                Color = model.Color,
+                Season = model.Season,
+                Style = model.Style
+            };
+
+            _context.ClothingItems.Add(item);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                $"{item.Name} gardırobuna başarıyla eklendi.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var item = await _context.ClothingItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (item == null)
+                return NotFound();
+
+            return View(item);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var item = await _context.ClothingItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (item == null)
+                return NotFound();
+
+            int? categoryId = item.CategoryId;
+
+            if (categoryId == null)
+            {
+                categoryId = await _context.Categories
+                    .Where(c => c.Name == item.Category)
+                    .Select(c => (int?)c.Id)
+                    .FirstOrDefaultAsync();
+            }
+
+            var model = new ClothingItemFormViewModel
+            {
+                Id = item.Id,
+                Name = item.Name,
+                CategoryId = categoryId,
+                Color = item.Color,
+                Season = item.Season,
+                Style = item.Style
+            };
+
+            await FillCategoriesAsync(model);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id, ClothingItemFormViewModel model)
+        {
+            var item = await _context.ClothingItems
+                .FindAsync(id);
+
+            if (item == null)
+                return NotFound();
+
+            model.Id = id;
+
+            if (!ModelState.IsValid)
+            {
+                await FillCategoriesAsync(model);
+                return View(model);
+            }
+
+            var category = await _context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    c => c.Id == model.CategoryId);
+
+            if (category == null)
+            {
+                ModelState.AddModelError(
+                    nameof(model.CategoryId),
+                    "Geçerli bir kategori seçiniz.");
+
+                await FillCategoriesAsync(model);
+                return View(model);
+            }
+
+            item.Name = model.Name;
+            item.CategoryId = category.Id;
+            item.Category = category.Name;
+            item.Color = model.Color;
+            item.Season = model.Season;
+            item.Style = model.Style;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                $"{item.Name} başarıyla güncellendi.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var item = await _context.ClothingItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (item == null)
+                return NotFound();
+
+            return View(item);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var item = await _context.ClothingItems
+                .FindAsync(id);
+
+            if (item == null)
+                return NotFound();
+
+            string name = item.Name;
+
+            _context.ClothingItems.Remove(item);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                $"{name} gardırobundan silindi.";
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

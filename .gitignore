@@ -31,3 +31,6 @@ build/
 # Gecici dosyalar
 *.log
 *.tmp
+
+# Weekly presentation videos
+*.mp4

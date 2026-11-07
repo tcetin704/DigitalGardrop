@@ -1,5 +1,5 @@
 
-@model DigitalGardrop.Web.Models.ClothingItem
+@model DigitalGardrop.Web.Models.ClothingItemFormViewModel
 
 @{
     ViewData["Title"] = "Kıyafet Ekle";
@@ -9,66 +9,88 @@
 
     <h2>Yeni Kıyafet Ekle</h2>
 
-    <p>Gardırobuna eklemek istediğin kıyafetin bilgilerini gir.</p>
+    <p class="text-muted">
+        Gardırobuna yeni bir kıyafet ekle.
+    </p>
 
     <form asp-controller="ClothingItems"
           asp-action="Create"
           method="post">
 
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger"></div>
+
         <div class="mb-3">
-            <label asp-for="Name" class="form-label">Kıyafet Adı</label>
+            <label asp-for="Name" class="form-label"></label>
             <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name"
+                  class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Category" class="form-label">Kategori</label>
-            <select asp-for="Category" class="form-select">
-                <option value="">Kategori Seçiniz</option>
-                <option>Üst Giyim</option>
-                <option>Alt Giyim</option>
-                <option>Ayakkabı</option>
-                <option>Dış Giyim</option>
-                <option>Aksesuar</option>
+            <label asp-for="CategoryId"
+                   class="form-label"></label>
+
+            <select asp-for="CategoryId"
+                    asp-items="Model.Categories"
+                    class="form-select">
+                <option value="">Kategori seçiniz</option>
             </select>
+
+            <span asp-validation-for="CategoryId"
+                  class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Color" class="form-label">Renk</label>
+            <label asp-for="Color" class="form-label"></label>
             <input asp-for="Color" class="form-control" />
+            <span asp-validation-for="Color"
+                  class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Season" class="form-label">Mevsim</label>
+            <label asp-for="Season" class="form-label"></label>
+
             <select asp-for="Season" class="form-select">
-                <option value="">Mevsim Seçiniz</option>
-                <option>İlkbahar</option>
-                <option>Yaz</option>
-                <option>Sonbahar</option>
-                <option>Kış</option>
-                <option>Dört Mevsim</option>
+                <option value="">Mevsim seçiniz</option>
+                <option value="İlkbahar">İlkbahar</option>
+                <option value="Yaz">Yaz</option>
+                <option value="Sonbahar">Sonbahar</option>
+                <option value="Kış">Kış</option>
+                <option value="Dört Mevsim">Dört Mevsim</option>
             </select>
+
+            <span asp-validation-for="Season"
+                  class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Style" class="form-label">Stil</label>
+            <label asp-for="Style" class="form-label"></label>
+
             <select asp-for="Style" class="form-select">
-                <option value="">Stil Seçiniz</option>
-                <option>Günlük</option>
-                <option>Spor</option>
-                <option>Klasik</option>
-                <option>Resmi</option>
+                <option value="">Stil seçiniz</option>
+                <option value="Günlük">Günlük</option>
+                <option value="Spor">Spor</option>
+                <option value="Klasik">Klasik</option>
+                <option value="Resmi">Resmi</option>
             </select>
+
+            <span asp-validation-for="Style"
+                  class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-success">
             Kıyafet Ekle
         </button>
 
-        <a asp-controller="ClothingItems"
-           asp-action="Index"
-           class="btn btn-secondary">
+        <a asp-action="Index" class="btn btn-secondary">
             İptal
         </a>
 
     </form>
+
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

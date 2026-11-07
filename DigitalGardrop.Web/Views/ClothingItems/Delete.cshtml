@@ -1,0 +1,72 @@
+
+@model DigitalGardrop.Web.Models.ClothingItem
+
+@{
+    ViewData["Title"] = "Kıyafet Sil";
+}
+
+<div class="container mt-5">
+
+    <h2>Kıyafet Silme</h2>
+
+    <div class="alert alert-warning mt-4">
+
+        <h5>Bu kıyafeti silmek istediğine emin misin?</h5>
+
+        <p class="mb-0">
+            Bu işlem seçilen kıyafeti gardırobundan kaldıracaktır.
+        </p>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h4>@Model.Name</h4>
+
+            <hr />
+
+            <p>
+                <strong>Kategori:</strong>
+                @Model.Category
+            </p>
+
+            <p>
+                <strong>Renk:</strong>
+                @Model.Color
+            </p>
+
+            <p>
+                <strong>Mevsim:</strong>
+                @Model.Season
+            </p>
+
+            <p>
+                <strong>Stil:</strong>
+                @Model.Style
+            </p>
+
+            <form asp-controller="ClothingItems"
+                  asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Evet, Kıyafeti Sil
+                </button>
+
+                <a asp-controller="ClothingItems"
+                   asp-action="Index"
+                   class="btn btn-secondary">
+                    Vazgeç
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,61 @@
+
+@model DigitalGardrop.Web.Models.ClothingItem
+
+@{
+    ViewData["Title"] = "Kıyafet Detayı";
+}
+
+<div class="container mt-5">
+
+    <h2>Kıyafet Detayı</h2>
+
+    <p class="text-muted">
+        Seçilen kıyafetin bilgileri
+    </p>
+
+    <div class="card shadow-sm mt-4">
+
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">@Model.Name</h4>
+        </div>
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-3">Kıyafet ID</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Kıyafet Adı</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Kategori</dt>
+                <dd class="col-sm-9">@Model.Category</dd>
+
+                <dt class="col-sm-3">Renk</dt>
+                <dd class="col-sm-9">@Model.Color</dd>
+
+                <dt class="col-sm-3">Mevsim</dt>
+                <dd class="col-sm-9">@Model.Season</dd>
+
+                <dt class="col-sm-3">Stil</dt>
+                <dd class="col-sm-9">@Model.Style</dd>
+
+            </dl>
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-warning">
+                Düzenle
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Gardıroba Dön
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -8,25 +8,43 @@
 <div class="container mt-5">
 
     <div class="text-center mb-5">
+
         <h1>Gardırobum</h1>
+
         <p class="lead">
             Dijital gardırobundaki kıyafetleri keşfet.
         </p>
+
         <p>Toplam kıyafet: @Model.Count</p>
-        
+
         <a asp-controller="ClothingItems"
-        asp-action="Create"
-        class="btn btn-success mt-3">
+           asp-action="Create"
+           class="btn btn-success mt-3">
             + Yeni Kıyafet Ekle
         </a>
 
     </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            Gardırobunda henüz kıyafet bulunmuyor.
+        </div>
+    }
 
     <div class="row">
 
         @foreach (var kiyafet in Model)
         {
             <div class="col-md-4 mb-4">
+
                 <div class="card h-100 shadow-sm">
 
                     <div class="card-body">
@@ -37,16 +55,58 @@
 
                         <hr />
 
-                        <p><strong>Kategori:</strong> @kiyafet.Category</p>
-                        <p><strong>Renk:</strong> @kiyafet.Color</p>
-                        <p><strong>Mevsim:</strong> @kiyafet.Season</p>
-                        <p><strong>Stil:</strong> @kiyafet.Style</p>
+                        <p>
+                            <strong>Kategori:</strong>
+                            @kiyafet.Category
+                        </p>
+
+                        <p>
+                            <strong>Renk:</strong>
+                            @kiyafet.Color
+                        </p>
+
+                        <p>
+                            <strong>Mevsim:</strong>
+                            @kiyafet.Season
+                        </p>
+
+                        <p>
+                            <strong>Stil:</strong>
+                            @kiyafet.Style
+                        </p>
+
+                    </div>
+
+                    <div class="card-footer bg-white d-flex gap-2">
+
+                        <a asp-controller="ClothingItems"
+                           asp-action="Details"
+                           asp-route-id="@kiyafet.Id"
+                           class="btn btn-info btn-sm">
+                            Detay
+                        </a>
+
+                        <a asp-controller="ClothingItems"
+                           asp-action="Edit"
+                           asp-route-id="@kiyafet.Id"
+                           class="btn btn-warning btn-sm">
+                            Düzenle
+                        </a>
+
+                        <a asp-controller="ClothingItems"
+                           asp-action="Delete"
+                           asp-route-id="@kiyafet.Id"
+                           class="btn btn-danger btn-sm">
+                            Sil
+                        </a>
 
                     </div>
 
                 </div>
+
             </div>
         }
 
     </div>
+
 </div>
