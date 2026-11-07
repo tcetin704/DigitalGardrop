@@ -1,0 +1,74 @@
+
+@model DigitalGardrop.Web.Models.ClothingItem
+
+@{
+    ViewData["Title"] = "Kıyafet Ekle";
+}
+
+<div class="container mt-5">
+
+    <h2>Yeni Kıyafet Ekle</h2>
+
+    <p>Gardırobuna eklemek istediğin kıyafetin bilgilerini gir.</p>
+
+    <form asp-controller="ClothingItems"
+          asp-action="Create"
+          method="post">
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Kıyafet Adı</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Category" class="form-label">Kategori</label>
+            <select asp-for="Category" class="form-select">
+                <option value="">Kategori Seçiniz</option>
+                <option>Üst Giyim</option>
+                <option>Alt Giyim</option>
+                <option>Ayakkabı</option>
+                <option>Dış Giyim</option>
+                <option>Aksesuar</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Color" class="form-label">Renk</label>
+            <input asp-for="Color" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Season" class="form-label">Mevsim</label>
+            <select asp-for="Season" class="form-select">
+                <option value="">Mevsim Seçiniz</option>
+                <option>İlkbahar</option>
+                <option>Yaz</option>
+                <option>Sonbahar</option>
+                <option>Kış</option>
+                <option>Dört Mevsim</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Style" class="form-label">Stil</label>
+            <select asp-for="Style" class="form-select">
+                <option value="">Stil Seçiniz</option>
+                <option>Günlük</option>
+                <option>Spor</option>
+                <option>Klasik</option>
+                <option>Resmi</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Kıyafet Ekle
+        </button>
+
+        <a asp-controller="ClothingItems"
+           asp-action="Index"
+           class="btn btn-secondary">
+            İptal
+        </a>
+
+    </form>
+</div>

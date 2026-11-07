@@ -1,0 +1,33 @@
+
+# .NET derleme dosyalari
+**/bin/
+**/obj/
+
+# Visual Studio ve VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Gizli ortam dosyalari
+.env
+.env.*
+**/appsettings.Development.json
+**/secrets.json
+
+# Isletim sistemi dosyalari
+.DS_Store
+Thumbs.db
+
+# Flutter ve Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+**/ios/Pods/
+**/android/local.properties
+
+# Gecici dosyalar
+*.log
+*.tmp

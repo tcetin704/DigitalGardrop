@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4">@ViewBag.ProjeAdi</h1>
+
+        <p class="lead">
+            @ViewBag.Aciklama
+        </p>
+    </div>
+
+    <h2>Kıyafet Kategorileri</h2>
+
+    <div class="row mt-4">
+
+        @foreach (var kategori in ViewBag.Kategoriler)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+
+                        <h5 class="card-title">
+                            @kategori
+                        </h5>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>

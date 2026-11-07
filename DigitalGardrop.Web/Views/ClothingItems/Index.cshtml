@@ -1,0 +1,52 @@
+
+@model List<DigitalGardrop.Web.Models.ClothingItem>
+
+@{
+    ViewData["Title"] = "Gardırobum";
+}
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1>Gardırobum</h1>
+        <p class="lead">
+            Dijital gardırobundaki kıyafetleri keşfet.
+        </p>
+        <p>Toplam kıyafet: @Model.Count</p>
+        
+        <a asp-controller="ClothingItems"
+        asp-action="Create"
+        class="btn btn-success mt-3">
+            + Yeni Kıyafet Ekle
+        </a>
+
+    </div>
+
+    <div class="row">
+
+        @foreach (var kiyafet in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            @kiyafet.Name
+                        </h5>
+
+                        <hr />
+
+                        <p><strong>Kategori:</strong> @kiyafet.Category</p>
+                        <p><strong>Renk:</strong> @kiyafet.Color</p>
+                        <p><strong>Mevsim:</strong> @kiyafet.Season</p>
+                        <p><strong>Stil:</strong> @kiyafet.Style</p>
+
+                    </div>
+
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
