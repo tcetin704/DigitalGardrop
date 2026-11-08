@@ -34,3 +34,8 @@ build/
 
 # Weekly presentation videos
 *.mp4
+
+# Ders belgeleri ve sunumlar
+*.docx
+*.pdf
+*.pptx
