@@ -71,7 +71,7 @@ Terminalde gösterilen localhost adresini tarayıcıda açın.
 MS SQL Server ve Entity Framework Core entegrasyonu
 planlanmaktadır. İlk haftada veritabanı kullanılmamaktadır.
 
-## Dersler
+## Dersler 
 
 - BLM4581 Ağ Tabanlı Teknolojiler ve Uygulamaları
 - iOS / Mobil Uygulama Geliştirme
