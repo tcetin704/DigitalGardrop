@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'screens/gardirobum_sayfasi.dart';
+
 void main() {
   runApp(const DigitalGardropApp());
 }
@@ -16,7 +18,12 @@ class DigitalGardropApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const AnaSayfa(),
+      // 3. HAFTA: Isimli rotalar ile sayfa gecisi
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const AnaSayfa(),
+        GardirobumSayfasi.routeName: (context) => const GardirobumSayfasi(),
+      },
     );
   }
 }
@@ -120,6 +127,21 @@ class AnaSayfa extends StatelessWidget {
                 child: Text(
                   'Kıyafetlerini yönet, kombinlerini oluştur ve tarzını paylaş.',
                   textAlign: TextAlign.center,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 3. HAFTA: Gardirobum sayfasina gecis
+              Center(
+                child: FilledButton.icon(
+                  key: const Key('gardirobumButonu'),
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    GardirobumSayfasi.routeName,
+                  ),
+                  icon: const Icon(Icons.checkroom),
+                  label: const Text('Gardırobumu Aç'),
                 ),
               ),
 
