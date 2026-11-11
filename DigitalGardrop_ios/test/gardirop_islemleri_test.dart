@@ -106,4 +106,36 @@ void main() {
       contains('kategorisinde sonuç vermedi'),
     );
   });
+
+  // 4. HAFTA: Koleksiyon fonksiyonlari (List / Map / Set)
+
+  test('farkliRenkler tekrar eden renkleri bir kez sayar', () {
+    expect(farkliRenkler(_liste), {'Siyah', 'Beyaz', 'Kırmızı'});
+    expect(farkliRenkler(const []), isEmpty);
+  });
+
+  test('kategoriyeGoreGrupla kıyafetleri kategoriye göre ayırır', () {
+    final gruplar = kategoriyeGoreGrupla([..._liste, _tisort]);
+
+    expect(gruplar.keys, hasLength(4));
+    expect(gruplar['Üst Giyim'], [_tisort, _tisort]);
+    expect(gruplar['Ayakkabı'], [_ayakkabi]);
+  });
+
+  test('filtreKategorileri bilinen sırayı korur, bilinmeyenleri sona ekler', () {
+    const sapka = ClothingItem(
+      id: 5,
+      name: 'Hasır Şapka',
+      category: 'Şapka',
+      color: 'Bej',
+      season: 'Yaz',
+      style: 'Günlük',
+    );
+    const bilinenSira = ['Üst Giyim', 'Alt Giyim', 'Ayakkabı', 'Aksesuar'];
+
+    expect(
+      filtreKategorileri([sapka, ..._liste], bilinenSira),
+      ['Üst Giyim', 'Ayakkabı', 'Aksesuar', 'Dış Giyim', 'Şapka'],
+    );
+  });
 }

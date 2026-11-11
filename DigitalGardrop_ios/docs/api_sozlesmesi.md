@@ -1,7 +1,9 @@
 # Mobil – Web API Sözleşmesi (Taslak)
 
-> **Durum:** 3. hafta taslağı. Web API henüz yazılmadı; alan adları ve uç noktalar
-> web ekibiyle teyit edildikçe bu belge güncellenecek. Flutter uygulaması
+> **Durum (4. hafta):** Mobil taraf bu sözleşmeye göre hazırlandı
+> (`ClothingItem.fromJson`, `ApiClient`). Web API henüz yazılmadı; denemeler
+> `tool/mock_api_sunucu.dart` sahte sunucusuyla yapılıyor. Alan adları ve uç
+> noktalar web ekibiyle teyit edildikçe bu belge güncellenecek. Flutter uygulaması
 > SQL Server'a doğrudan bağlanmaz, yalnızca bu REST API'yi kullanır.
 
 ## Kıyafet (ClothingItem)
@@ -64,8 +66,22 @@ Yetkisiz isteklerde `401`, başka kullanıcıya ait kayıtta `403` beklenir.
 | iOS Simulator    | `http://localhost:5038` |
 | Android emülatörü| `http://10.0.2.2:5038` (emülatör için host makinenin adresi) |
 
+Gerçek telefonda: `--dart-define=API_BASE_URL=http://<bilgisayar-IP>:5038`
+
 Port, web projesindeki `Properties/launchSettings.json` içindeki `http`
 profilinden alınmıştır. Taban adreste gizli anahtar bulunmaz.
+
+## Mobil tarafın eksik/bozuk veriye davranışı
+
+| Durum | Mobil uygulamanın davranışı |
+|-------|-----------------------------|
+| `id` veya `name` eksik / bozuk | Kayıt atlanır, diğerleri gösterilir |
+| `color`, `season`, `style`, `category` eksik | "Belirtilmemiş" gösterilir |
+| `imageUrl` boş veya `null` | Kategori ikonu gösterilir |
+| Sayı alanı metin olarak gelir (`"5"`) | Sayıya çevrilir |
+| Yanıt liste değil / geçersiz JSON | "Sunucudan gelen veri okunamadı" + Tekrar dene |
+| 401/403, 404, 5xx | Duruma özel mesaj + Tekrar dene |
+| 8 sn içinde yanıt yok | Zaman aşımı mesajı + Tekrar dene |
 
 ## Web ekibine sorulacaklar
 

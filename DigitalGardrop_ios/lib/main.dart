@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'screens/gardirobum_sayfasi.dart';
+import 'services/kiyafet_repository.dart';
 
 void main() {
   runApp(const DigitalGardropApp());
 }
 
 class DigitalGardropApp extends StatelessWidget {
-  const DigitalGardropApp({super.key});
+  const DigitalGardropApp({super.key, this.repository});
+
+  /// 4. HAFTA: Gardirobum ekraninin veri kaynagi.
+  /// Verilmezse Web API kullanilir; testlerde yerel kaynak verilir.
+  final KiyafetRepository? repository;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,8 @@ class DigitalGardropApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const AnaSayfa(),
-        GardirobumSayfasi.routeName: (context) => const GardirobumSayfasi(),
+        GardirobumSayfasi.routeName: (context) =>
+            GardirobumSayfasi(repository: repository),
       },
     );
   }

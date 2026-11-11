@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:digital_gardrop_mobile/main.dart';
 import 'package:digital_gardrop_mobile/models/clothing_item.dart';
 import 'package:digital_gardrop_mobile/screens/gardirobum_sayfasi.dart';
 import 'package:digital_gardrop_mobile/screens/kiyafet_detay_sayfasi.dart';
+import 'package:digital_gardrop_mobile/services/api_exception.dart';
+import 'package:digital_gardrop_mobile/services/kiyafet_repository.dart';
 import 'package:digital_gardrop_mobile/widgets/kiyafet_karti.dart';
 
 void main() {
@@ -38,7 +42,9 @@ void main() {
   testWidgets('Ana Sayfa -> Gardırobum -> Detay -> geri dönüş', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const DigitalGardropApp());
+    await tester.pumpWidget(
+      DigitalGardropApp(repository: OrnekVeriRepository()),
+    );
 
     // Ana sayfadan Gardirobum ekranina gec.
     final buton = find.byKey(const Key('gardirobumButonu'));
@@ -68,7 +74,10 @@ void main() {
   testWidgets('Arama sonuçlu ve sonuçsuz durumda doğru çalışır', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: GardirobumSayfasi()));
+    await tester.pumpWidget(
+      MaterialApp(home: GardirobumSayfasi(repository: OrnekVeriRepository())),
+    );
+    await tester.pumpAndSettle();
 
     // Buyuk harf ve Turkce karakterle arama: SİYAH -> 2 sonuc.
     await tester.enterText(find.byKey(const Key('aramaAlani')), 'SİYAH');
@@ -89,7 +98,10 @@ void main() {
   testWidgets('Kategori filtresi yalnızca o kategoriyi gösterir', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: GardirobumSayfasi()));
+    await tester.pumpWidget(
+      MaterialApp(home: GardirobumSayfasi(repository: OrnekVeriRepository())),
+    );
+    await tester.pumpAndSettle();
 
     final ayakkabiCipi = find.text('Ayakkabı (2)');
     await tester.ensureVisible(ayakkabiCipi);
@@ -103,8 +115,13 @@ void main() {
 
   testWidgets('Boş gardırop mesajı gösterilir', (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: GardirobumSayfasi(kiyafetler: [])),
+      MaterialApp(
+        home: GardirobumSayfasi(
+          repository: OrnekVeriRepository(kiyafetler: const []),
+        ),
+      ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byType(KiyafetKarti), findsNothing);
     expect(
@@ -139,4 +156,96 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.textContaining('Çok Uzun İsimli'), findsOneWidget);
   });
+
+  // 4. HAFTA TESTLERI: yukleniyor / hata / tekrar dene
+
+  testWidgets('Yükleniyor -> hata -> tekrar dene -> liste', (
+    WidgetTester tester,
+  ) async {
+    final ilkIstek = Completer<List<ClothingItem>>();
+    final repo = _SahteRepository([
+      () => ilkIstek.future,
+      () async => const [
+        ClothingItem(
+          id: 1,
+          name: 'API Tişörtü',
+          category: 'Üst Giyim',
+          color: 'Yeşil',
+          season: 'Yaz',
+          style: 'Spor',
+        ),
+      ],
+    ]);
+
+    await tester.pumpWidget(MaterialApp(home: GardirobumSayfasi(repository: repo)));
+
+    // 1) Istek surerken yukleniyor gorunumu.
+    expect(find.text('Kıyafetler yükleniyor...'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    // 2) Sunucu kapali: hata gorunumu.
+    ilkIstek.completeError(const ApiException(ApiHataTuru.baglanti));
+    await tester.pump();
+    expect(find.text('Kıyafetler yüklenemedi'), findsOneWidget);
+    expect(
+      find.text(const ApiException(ApiHataTuru.baglanti).kullaniciMesaji),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+
+    // 3) Tekrar dene: ikinci istek basarili.
+    await tester.tap(find.byKey(const Key('tekrarDeneButonu')));
+    await tester.pumpAndSettle();
+    expect(repo.cagriSayisi, 2);
+    expect(find.text('API Tişörtü'), findsOneWidget);
+    expect(find.text('Sahte API'), findsOneWidget);
+  });
+
+  testWidgets('Hata ekranından örnek verilerle devam edilebilir', (
+    WidgetTester tester,
+  ) async {
+    final repo = _SahteRepository([
+      () async => throw const ApiException(ApiHataTuru.sunucu, durumKodu: 500),
+    ]);
+
+    await tester.pumpWidget(MaterialApp(home: GardirobumSayfasi(repository: repo)));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('kod: 500'), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('ornekVeriButonu')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(KiyafetKarti), findsWidgets);
+    expect(find.text('Yerel örnek veri'), findsOneWidget);
+  });
+
+  testWidgets('Beklenmeyen hata da hata ekranında gösterilir', (
+    WidgetTester tester,
+  ) async {
+    final repo = _SahteRepository([() async => throw StateError('beklenmeyen')]);
+
+    await tester.pumpWidget(MaterialApp(home: GardirobumSayfasi(repository: repo)));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(const ApiException(ApiHataTuru.bilinmeyen).kullaniciMesaji),
+      findsOneWidget,
+    );
+  });
+}
+
+/// Testlerde sırayla verilen yanıtları döndüren sahte veri kaynağı.
+class _SahteRepository extends KiyafetRepository {
+  _SahteRepository(this._yanitlar);
+
+  final List<Future<List<ClothingItem>> Function()> _yanitlar;
+  int cagriSayisi = 0;
+
+  @override
+  String get kaynakAdi => 'Sahte API';
+
+  @override
+  Future<List<ClothingItem>> kiyafetleriGetir() => _yanitlar[cagriSayisi++]();
 }

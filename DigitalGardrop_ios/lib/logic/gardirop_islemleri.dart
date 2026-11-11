@@ -119,3 +119,34 @@ String bosSonucMesaji({required String arama, required String kategori}) {
     return 'Gardırobun boş. İlk kıyafetini eklediğinde burada görünecek.';
   }
 }
+
+// 4. HAFTA: KOLEKSIYONLAR (List / Map / Set) VE DONUSUMLER
+
+/// Gardıroptaki farklı renkleri toplar. (Set + map örneği)
+Set<String> farkliRenkler(List<ClothingItem> kiyafetler) =>
+    kiyafetler.map((kiyafet) => kiyafet.color).toSet();
+
+/// Kıyafetleri kategoriye göre gruplar. (`Map<String, List>` örneği)
+Map<String, List<ClothingItem>> kategoriyeGoreGrupla(
+  List<ClothingItem> kiyafetler,
+) {
+  final gruplar = <String, List<ClothingItem>>{};
+  for (final kiyafet in kiyafetler) {
+    gruplar.putIfAbsent(kiyafet.category, () => []).add(kiyafet);
+  }
+  return gruplar;
+}
+
+/// Filtre çiplerinde gösterilecek kategoriler.
+/// Önce bilinen kategoriler sabit sırayla (yalnızca listede olanlar),
+/// ardından API'den gelen bilinmeyen kategoriler alfabetik olarak eklenir.
+/// (Set + where + toList örneği)
+List<String> filtreKategorileri(
+  List<ClothingItem> kiyafetler,
+  List<String> bilinenSira,
+) {
+  final mevcut = kiyafetler.map((kiyafet) => kiyafet.category).toSet();
+  final bilinenler = bilinenSira.where(mevcut.contains).toList();
+  final digerleri = mevcut.difference(bilinenSira.toSet()).toList()..sort();
+  return [...bilinenler, ...digerleri];
+}
