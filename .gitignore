@@ -39,3 +39,8 @@ build/
 *.docx
 *.pdf
 *.pptx
+
+# Yerel SQLite veritabani
+*.db
+*.db-shm
+*.db-wal
