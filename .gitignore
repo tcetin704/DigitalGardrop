@@ -44,3 +44,5 @@ build/
 *.db
 *.db-shm
 *.db-wal
+
+/DigitalGardrop_web/DigitalGardrop.Web/wwwroot/uploads/

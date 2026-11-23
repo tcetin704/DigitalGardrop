@@ -103,6 +103,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Calisma zamaninda yuklenen /uploads fotograflarini da sun.
+app.UseStaticFiles();
+
 app.UseRouting();
 
 // KIMLIK DOGRULAMA VE YETKILENDIRME

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 
 namespace DigitalGardrop.Web.Models
 {
@@ -31,6 +32,16 @@ namespace DigitalGardrop.Web.Models
         [Required(ErrorMessage = "Stil seçiniz.")]
         [Display(Name = "Stil")]
         public string Style { get; set; } = "";
+
+        [Display(Name = "Kıyafet Fotoğrafı")]
+        [ValidateNever]
+        public IFormFile? ImageFile { get; set; }
+
+        [ValidateNever]
+        public string? ExistingImageUrl { get; set; }
+
+        [Display(Name = "Mevcut fotoğrafı kaldır")]
+        public bool RemoveImage { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> Categories

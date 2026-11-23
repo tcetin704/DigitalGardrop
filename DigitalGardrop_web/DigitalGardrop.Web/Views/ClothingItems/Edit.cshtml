@@ -16,7 +16,7 @@
     <form asp-controller="ClothingItems"
           asp-action="Edit"
           asp-route-id="@Model.Id"
-          method="post">
+          method="post" enctype="multipart/form-data">
 
         <div asp-validation-summary="ModelOnly"
              class="text-danger"></div>
@@ -80,6 +80,29 @@
                   class="text-danger"></span>
         </div>
 
+        <div class="mb-4">
+            <label asp-for="ImageFile" class="form-label fw-semibold"></label>
+            <input asp-for="ImageFile" type="file" class="form-control"
+                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                   data-photo-preview="clothingPreview" />
+            <div class="form-text">Yeni fotoğraf seçersen eskisinin yerine geçer. En fazla 5 MB.</div>
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+            @if (!string.IsNullOrWhiteSpace(Model.ExistingImageUrl))
+            {
+                <img id="clothingPreview" src="@Model.ExistingImageUrl"
+                     class="upload-preview mt-3" alt="Kıyafetin mevcut fotoğrafı" />
+                <div class="form-check mt-2">
+                    <input asp-for="RemoveImage" class="form-check-input" />
+                    <label asp-for="RemoveImage" class="form-check-label"></label>
+                </div>
+            }
+            else
+            {
+                <img id="clothingPreview" class="upload-preview d-none mt-3"
+                     alt="Kıyafet fotoğrafı önizlemesi" />
+            }
+        </div>
+
         <button type="submit" class="btn btn-primary">
             Değişiklikleri Kaydet
         </button>
@@ -94,4 +117,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/photo-preview.js" asp-append-version="true"></script>
 }
