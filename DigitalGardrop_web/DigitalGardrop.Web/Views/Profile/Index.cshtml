@@ -1,0 +1,72 @@
+@model DigitalGardrop.Web.ViewModels.ProfileSummaryViewModel
+@{
+    ViewData["Title"] = "Profilim";
+    var initial = string.IsNullOrWhiteSpace(Model.DisplayName)
+        ? "K"
+        : Model.DisplayName.Substring(0, 1).ToUpperInvariant();
+}
+
+<div class="profile-page py-4 py-md-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <p class="text-uppercase text-muted small fw-semibold mb-1">Hesap yönetimi</p>
+            <h1 class="h2 fw-bold mb-0">Profilim</h1>
+        </div>
+        <a asp-controller="ClothingItems" asp-action="Index"
+           class="btn btn-outline-primary">Gardırobuma Git</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string message)
+    {
+        <div class="alert alert-success" role="status">@message</div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <section class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex flex-wrap align-items-center gap-4 mb-4">
+                        @if (!string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+                        {
+                            <img class="profile-avatar" src="@Model.ProfileImageUrl"
+                                 alt="@Model.DisplayName profil fotoğrafı" referrerpolicy="no-referrer" />
+                        }
+                        else
+                        {
+                            <div class="profile-avatar profile-avatar-placeholder"
+                                 aria-label="Profil fotoğrafı yok">@initial</div>
+                        }
+                        <div>
+                            <h2 class="h4 fw-bold mb-1">@Model.DisplayName</h2>
+                            <span class="badge rounded-pill @(Model.Role == "Admin" ? "text-bg-primary" : "text-bg-secondary")">
+                                @(Model.Role == "Admin" ? "Yönetici" : "Kullanıcı")
+                            </span>
+                        </div>
+                    </div>
+                    <hr />
+                    <dl class="row mb-4 profile-details">
+                        <dt class="col-sm-4 text-muted">Kullanıcı adı</dt>
+                        <dd class="col-sm-8">@Model.DisplayName</dd>
+                        <dt class="col-sm-4 text-muted">E-posta</dt>
+                        <dd class="col-sm-8 text-break">@Model.Email</dd>
+                        <dt class="col-sm-4 text-muted">Hesap türü</dt>
+                        <dd class="col-sm-8">@(Model.Role == "Admin" ? "Yönetici" : "Standart kullanıcı")</dd>
+                    </dl>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-action="Edit" class="btn btn-primary">Bilgilerimi Düzenle</a>
+                        <a asp-action="ChangePassword" class="btn btn-outline-secondary">Şifremi Değiştir</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-4">
+            <section class="card border-0 shadow-sm rounded-4 h-100 profile-stat-card">
+                <div class="card-body p-4 d-flex flex-column justify-content-center">
+                    <span class="text-muted fw-semibold">Gardırobumdaki kıyafetler</span>
+                    <span class="display-3 fw-bold my-2">@Model.ClothingCount</span>
+                    <p class="text-muted mb-0">Hesabınıza ait kayıtlı kıyafet sayısı.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

@@ -1,112 +1,163 @@
-
-@model List<DigitalGardrop.Web.Models.ClothingItem>
+@model DigitalGardrop.Web.ViewModels.WardrobeIndexViewModel
 
 @{
     ViewData["Title"] = "Gardırobum";
 }
 
-<div class="container mt-5">
-
-    <div class="text-center mb-5">
-
-        <h1>Gardırobum</h1>
-
-        <p class="lead">
-            Dijital gardırobundaki kıyafetleri keşfet.
-        </p>
-
-        <p>Toplam kıyafet: @Model.Count</p>
-
-        <a asp-controller="ClothingItems"
-           asp-action="Create"
-           class="btn btn-success mt-3">
-            + Yeni Kıyafet Ekle
-        </a>
-
-    </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info text-center">
-            Gardırobunda henüz kıyafet bulunmuyor.
-        </div>
-    }
-
-    <div class="row">
-
-        @foreach (var kiyafet in Model)
-        {
-            <div class="col-md-4 mb-4">
-
-                <div class="card h-100 shadow-sm">
-
-                    <div class="card-body">
-
-                        <h5 class="card-title">
-                            @kiyafet.Name
-                        </h5>
-
-                        <hr />
-
-                        <p>
-                            <strong>Kategori:</strong>
-                            @kiyafet.Category
-                        </p>
-
-                        <p>
-                            <strong>Renk:</strong>
-                            @kiyafet.Color
-                        </p>
-
-                        <p>
-                            <strong>Mevsim:</strong>
-                            @kiyafet.Season
-                        </p>
-
-                        <p>
-                            <strong>Stil:</strong>
-                            @kiyafet.Style
-                        </p>
-
-                    </div>
-
-                    <div class="card-footer bg-white d-flex gap-2">
-
-                        <a asp-controller="ClothingItems"
-                           asp-action="Details"
-                           asp-route-id="@kiyafet.Id"
-                           class="btn btn-info btn-sm">
-                            Detay
-                        </a>
-
-                        <a asp-controller="ClothingItems"
-                           asp-action="Edit"
-                           asp-route-id="@kiyafet.Id"
-                           class="btn btn-warning btn-sm">
-                            Düzenle
-                        </a>
-
-                        <a asp-controller="ClothingItems"
-                           asp-action="Delete"
-                           asp-route-id="@kiyafet.Id"
-                           class="btn btn-danger btn-sm">
-                            Sil
-                        </a>
-
-                    </div>
-
+<div class="wardrobe-page">
+    <section class="wardrobe-hero" aria-labelledby="wardrobeHeading">
+        <div class="wardrobe-hero-copy">
+            <span class="wardrobe-eyebrow">DİJİTAL GARDIROP</span>
+            <h1 id="wardrobeHeading">Gardırobun, senin tarzın.</h1>
+            <p>Kıyafetlerini keşfet, ara ve sana en uygun parçaları kolayca bul.</p>
+            <div class="wardrobe-hero-stats">
+                <div>
+                    <span class="wardrobe-stat-number">@Model.TotalCount</span>
+                    <span class="wardrobe-stat-label">Toplam kıyafet</span>
                 </div>
+                <div>
+                    <span class="wardrobe-stat-number">@Model.Items.Count</span>
+                    <span class="wardrobe-stat-label">Gösterilen</span>
+                </div>
+            </div>
+        </div>
+        <a asp-controller="ClothingItems" asp-action="Create" class="btn wardrobe-add-btn">
+            <span aria-hidden="true">+</span> Yeni Kıyafet Ekle
+        </a>
+    </section>
 
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success mt-4" role="status">@successMessage</div>
+    }
+
+    <section class="wardrobe-filters" aria-labelledby="filterHeading">
+        <div class="wardrobe-filter-heading">
+            <div>
+                <h2 id="filterHeading">Kıyafetlerini filtrele</h2>
+                <p>Ad, kategori, mevsim veya renge göre arama yap.</p>
+            </div>
+            @if (Model.HasActiveFilters || Model.Sort != "newest")
+            {
+                <a asp-action="Index" class="wardrobe-clear-link">Filtreleri temizle</a>
+            }
+        </div>
+
+        <form asp-controller="ClothingItems" asp-action="Index" method="get" class="wardrobe-filter-grid">
+            <div class="wardrobe-field wardrobe-search-field">
+                <label for="wardrobeSearch">Kıyafet ara</label>
+                <input id="wardrobeSearch" name="search" value="@Model.Search" type="search"
+                       maxlength="80" class="form-control" placeholder="Örn. beyaz gömlek" />
+            </div>
+            <div class="wardrobe-field">
+                <label for="wardrobeCategory">Kategori</label>
+                <select id="wardrobeCategory" name="category" class="form-select">
+                    <option value="">Tüm kategoriler</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category" selected="@(Model.Category == category)">@category</option>
+                    }
+                </select>
+            </div>
+            <div class="wardrobe-field">
+                <label for="wardrobeSeason">Mevsim</label>
+                <select id="wardrobeSeason" name="season" class="form-select">
+                    <option value="">Tüm mevsimler</option>
+                    @foreach (var season in Model.Seasons)
+                    {
+                        <option value="@season" selected="@(Model.Season == season)">@season</option>
+                    }
+                </select>
+            </div>
+            <div class="wardrobe-field">
+                <label for="wardrobeColor">Renk</label>
+                <select id="wardrobeColor" name="color" class="form-select">
+                    <option value="">Tüm renkler</option>
+                    @foreach (var color in Model.Colors)
+                    {
+                        <option value="@color" selected="@(Model.Color == color)">@color</option>
+                    }
+                </select>
+            </div>
+            <div class="wardrobe-field">
+                <label for="wardrobeSort">Sıralama</label>
+                <select id="wardrobeSort" name="sort" class="form-select">
+                    <option value="newest" selected="@(Model.Sort == "newest")">En yeni</option>
+                    <option value="oldest" selected="@(Model.Sort == "oldest")">En eski</option>
+                    <option value="name" selected="@(Model.Sort == "name")">İsme göre (A-Z)</option>
+                    <option value="category" selected="@(Model.Sort == "category")">Kategoriye göre</option>
+                </select>
+            </div>
+            <div class="wardrobe-filter-action">
+                <button type="submit" class="btn wardrobe-filter-btn">Sonuçları Göster</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="wardrobe-results" aria-label="Gardırop sonuçları">
+        <div class="wardrobe-results-heading">
+            <h2>Kıyafetlerim <span>@Model.Items.Count</span></h2>
+            @if (Model.HasActiveFilters)
+            {
+                <p>@Model.TotalCount kıyafetin arasından @Model.Items.Count sonuç bulundu.</p>
+            }
+            else
+            {
+                <p>Gardırobundaki parçaların tamamı burada.</p>
+            }
+        </div>
+
+        @if (Model.Items.Count == 0)
+        {
+            <div class="wardrobe-empty-state">
+                <div class="wardrobe-empty-icon" aria-hidden="true">⌑</div>
+                @if (Model.TotalCount == 0)
+                {
+                    <h3>Gardırobun henüz boş</h3>
+                    <p>İlk kıyafetini ekleyerek dijital gardırobunu oluşturmaya başla.</p>
+                    <a asp-action="Create" class="btn wardrobe-filter-btn">İlk kıyafetimi ekle</a>
+                }
+                else
+                {
+                    <h3>Aradığın kıyafeti bulamadık</h3>
+                    <p>Başka bir arama veya filtre seçeneği dene.</p>
+                    <a asp-action="Index" class="btn wardrobe-filter-btn">Tüm kıyafetleri göster</a>
+                }
             </div>
         }
-
-    </div>
-
+        else
+        {
+            <div class="wardrobe-grid">
+                @foreach (var item in Model.Items)
+                {
+                    <article class="wardrobe-item-card">
+                        <div class="wardrobe-item-media">
+                            @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" alt="@item.Name fotoğrafı" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="wardrobe-item-no-photo" aria-label="Fotoğraf eklenmemiş">📷</div>
+                            }
+                            <span class="wardrobe-item-category">@item.Category</span>
+                        </div>
+                        <div class="wardrobe-item-content">
+                            <h3 title="@item.Name">@item.Name</h3>
+                            <div class="wardrobe-item-tags">
+                                <span><span aria-hidden="true">◉</span> @item.Color</span>
+                                <span><span aria-hidden="true">☀</span> @item.Season</span>
+                                <span><span aria-hidden="true">✦</span> @item.Style</span>
+                            </div>
+                            <div class="wardrobe-item-actions">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">Detay</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">Düzenle</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Sil</a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
 </div>

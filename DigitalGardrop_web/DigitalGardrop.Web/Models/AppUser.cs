@@ -18,6 +18,12 @@ namespace DigitalGardrop.Web.Models
         [Display(Name = "E-posta")]
         public string Email { get; set; } = "";
 
+        // Gercek sifre degil, sifrenin guvenli hash degeri saklanir.
+        // Eski kullanici kayitlariyla uyumluluk icin nullable.
+        [StringLength(512)]
+        public string? PasswordHash { get; set; }
+
+        // Roller: User veya Admin
         [Required]
         [StringLength(20)]
         public string Role { get; set; } = "User";

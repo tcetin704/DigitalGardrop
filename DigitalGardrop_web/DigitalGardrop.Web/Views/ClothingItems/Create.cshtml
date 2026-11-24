@@ -15,7 +15,7 @@
 
     <form asp-controller="ClothingItems"
           asp-action="Create"
-          method="post">
+          method="post" enctype="multipart/form-data">
 
         <div asp-validation-summary="ModelOnly"
              class="text-danger"></div>
@@ -79,6 +79,17 @@
                   class="text-danger"></span>
         </div>
 
+        <div class="mb-4">
+            <label asp-for="ImageFile" class="form-label fw-semibold"></label>
+            <input asp-for="ImageFile" type="file" class="form-control"
+                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                   data-photo-preview="clothingPreview" />
+            <div class="form-text">JPG, PNG veya WEBP; en fazla 5 MB.</div>
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+            <img id="clothingPreview" alt="Seçilen kıyafet fotoğrafı önizlemesi"
+                 class="upload-preview d-none mt-3" />
+        </div>
+
         <button type="submit" class="btn btn-success">
             Kıyafet Ekle
         </button>
@@ -93,4 +104,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/photo-preview.js" asp-append-version="true"></script>
 }

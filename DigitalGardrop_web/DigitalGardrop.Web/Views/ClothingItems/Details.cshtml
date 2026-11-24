@@ -20,6 +20,11 @@
         </div>
 
         <div class="card-body">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="wardrobe-detail-photo mb-4"
+                     alt="@Model.Name fotoğrafı" />
+            }
 
             <dl class="row">
 
